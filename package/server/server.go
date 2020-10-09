@@ -64,10 +64,10 @@ func genDomainString() string {
 
 //ConfigData is ...
 type ConfigData struct {
-	Host       string
-	Port       string
-	PrivateDir string
-	AppendWWW  bool
+	Host       string `default:"localhost"`
+	Port       string `default:"8000"`
+	PrivateDir string `default:".private"`
+	AppendWWW  bool   `default:"false"`
 }
 
 //AddDomain is ...
