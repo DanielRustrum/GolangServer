@@ -1,14 +1,8 @@
 package server
 
 // TODO: Ready Message
-// TODO: Certs for Mobile and non-local devices
-// TODO: Microsoft Auth
-// TODO: Domain Paths
-// TODO: Specify Auth Redirect
-// TODO: NGINX DNS Server Boot
-// TODO: Automatically Gen Certs > Inprogress
+// TODO: Non-Localhost server boot
 // TODO: Http to Https redirect
-// TODO: DNS Support
 
 import (
 	"crypto/tls"

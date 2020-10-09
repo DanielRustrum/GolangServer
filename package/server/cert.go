@@ -9,6 +9,8 @@ import (
 
 // TODO: Cert Cacheing
 // TODO: DNS Cert from Lets Encrypt; use Autocert
+// TODO: Automatically Gen Certs > Inprogress
+// TODO: Certs for Mobile and non-local devices
 
 func getDNSCert() func(*tls.ClientHelloInfo) (*tls.Certificate, error) {
 	domainCert := genDomainString()
