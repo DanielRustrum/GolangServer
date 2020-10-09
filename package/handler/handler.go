@@ -1,5 +1,10 @@
 package handler
 
+// TODO: CORS Support
+// TODO: File Handler > Inprogress
+// TODO: REST Handler
+// TODO: Debug Handler
+
 import (
 	"math/rand"
 	"net/http"

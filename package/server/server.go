@@ -6,18 +6,15 @@ package server
 // TODO: Domain Paths
 // TODO: Specify Auth Redirect
 // TODO: NGINX DNS Server Boot
-// TODO: Error Support
-// TODO: CORS Support
-// TODO: File Handler > Inprogress
-// TODO: REST Handler
-// TODO: Debug Handler
+// TODO: Automatically Gen Certs > Inprogress
+// TODO: Http to Https redirect
+// TODO: DNS Support
 
 import (
 	"crypto/tls"
 	"fmt"
 	"log"
 	"net/http"
-	"os/exec"
 	"strings"
 
 	"github.com/DanielRustrum/Https-Go-Server/package/handler"
@@ -55,37 +52,18 @@ func (subdomains subdomainHandler) ServeHTTP(response http.ResponseWriter, reque
 	}
 }
 
-func genCert() {
-	certCommand := "-Command mkcert -cert-file " +
-		configData.PrivateDir +
-		"/server.cert -key-file " +
-		configData.PrivateDir +
-		"/server.key"
-
-	domainCert := ""
+func genDomainString() string {
+	domainString := ""
 
 	for key := range domains {
 		if key == "" {
-			domainCert = domainCert + " " + configData.Host
+			domainString = domainString + " " + configData.Host
 		} else {
-			domainCert = domainCert + " " + key + "." + configData.Host
+			domainString = domainString + " " + key + "." + configData.Host
 		}
 	}
 
-	commandList := strings.Fields(certCommand + domainCert)
-
-	cmd1 := exec.Command("./scripts/create-cert-authority.bat")
-	err := cmd1.Run()
-	if err != nil {
-		log.Fatalf("cert failed to be created... mkcert command failed with %s\n", err)
-	}
-
-	cmd := exec.Command("powershell.exe", commandList...)
-
-	err = cmd.Run()
-	if err != nil {
-		log.Fatalf("cert failed to be created... mkcert command failed with %s\n", err)
-	}
+	return domainString
 }
 
 //* Public
@@ -123,7 +101,6 @@ func Setup(data ConfigData) {
 
 //Run is ...
 func Run() {
-	genCert()
 
 	subdomains := make(subdomainHandler)
 
@@ -136,24 +113,31 @@ func Run() {
 	fmt.Printf("Server Ready\n")
 	fmt.Printf("Website available on https://%s:%s\n", configData.Host, configData.Port)
 
-	cfg := &tls.Config{
-		MinVersion:               tls.VersionTLS12,
-		CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
-		PreferServerCipherSuites: true,
-		CipherSuites: []uint16{
-			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-			tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_RSA_WITH_AES_256_CBC_SHA,
-		},
-	}
+	if configData.Host == "localhost" {
 
-	srv := &http.Server{
-		Addr:         ":" + configData.Port,
-		Handler:      subdomains,
-		TLSConfig:    cfg,
-		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
-	}
+		cert, key := getLocalCert()
 
-	log.Fatal(srv.ListenAndServeTLS("private/server.cert", "private/server.key"))
+		cfg := &tls.Config{
+			MinVersion:               tls.VersionTLS12,
+			CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
+			PreferServerCipherSuites: true,
+			CipherSuites: []uint16{
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+				tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+			},
+		}
+
+		srv := &http.Server{
+			Addr:         ":" + configData.Port,
+			Handler:      subdomains,
+			TLSConfig:    cfg,
+			TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
+		}
+
+		log.Fatal(srv.ListenAndServeTLS(cert, key))
+	} else {
+		fmt.Printf("none Localhost Hosts Not Supported Yet... Server Failed to Start")
+	}
 }
