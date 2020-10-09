@@ -56,7 +56,7 @@ func (subdomains subdomainHandler) ServeHTTP(response http.ResponseWriter, reque
 }
 
 func genCert() {
-	certCommand := "-cert-file " +
+	certCommand := "-Command mkcert -cert-file " +
 		configData.PrivateDir +
 		"/server.cert -key-file " +
 		configData.PrivateDir +
@@ -74,9 +74,15 @@ func genCert() {
 
 	commandList := strings.Fields(certCommand + domainCert)
 
-	cmd := exec.Command("mkcert", commandList...)
+	cmd1 := exec.Command("./scripts/create-cert-authority.bat")
+	err := cmd1.Run()
+	if err != nil {
+		log.Fatalf("cert failed to be created... mkcert command failed with %s\n", err)
+	}
 
-	err := cmd.Run()
+	cmd := exec.Command("powershell.exe", commandList...)
+
+	err = cmd.Run()
 	if err != nil {
 		log.Fatalf("cert failed to be created... mkcert command failed with %s\n", err)
 	}

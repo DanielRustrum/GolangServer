@@ -20,6 +20,5 @@ func main() {
 	fileServer := handler.FileServer("./public", routeMap)
 
 	server.AddDomain("", fileServer.Handler)
-
 	server.Run()
 }
