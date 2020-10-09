@@ -21,6 +21,11 @@ func genHandlerID() int {
 
 //* Public
 
+// Setup is ...
+func Setup() {
+	idMap = make(map[int]bool)
+}
+
 // Handler is ..
 type Handler struct {
 	ID      int

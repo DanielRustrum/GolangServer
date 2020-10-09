@@ -19,6 +19,8 @@ import (
 	"net/http"
 	"os/exec"
 	"strings"
+
+	"github.com/DanielRustrum/Https-Go-Server/package/handler"
 )
 
 //* Server Logic
@@ -107,6 +109,7 @@ func AddDomain(key string, handler func(http.ResponseWriter, *http.Request)) {
 func Setup(data ConfigData) {
 	if !ranSetup {
 		configData = data
+		handler.Setup()
 		domains = make(domainMap)
 	}
 	ranSetup = true
