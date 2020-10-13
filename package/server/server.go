@@ -64,10 +64,11 @@ func genDomainString() string {
 
 //ConfigData is ...
 type ConfigData struct {
-	Host       string `default:"localhost"`
-	Port       string `default:"8000"`
-	PrivateDir string `default:".private"`
-	AppendWWW  bool   `default:"false"`
+	Host           string `default:"localhost"`
+	Port           string `default:"8000"`
+	PrivateDir     string `default:".private"`
+	OpenSSLCommand string `default:""`
+	AppendWWW      bool   `default:"false"`
 }
 
 //AddDomain is ...
@@ -107,10 +108,14 @@ func Run() {
 	fmt.Printf("Server Ready\n")
 	fmt.Printf("Website available on https://%s:%s\n", configData.Host, configData.Port)
 
-	if configData.Host == "localhost" {
+	cert, key, certFunc := GetCert(
+		configData.OpenSSLCommand,
+		configData.PrivateDir,
+		configData.Host,
+		genDomainString(),
+	)
 
-		cert, key := getLocalCert()
-
+	if certFunc == nil {
 		cfg := &tls.Config{
 			MinVersion:               tls.VersionTLS12,
 			CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
@@ -132,6 +137,6 @@ func Run() {
 
 		log.Fatal(srv.ListenAndServeTLS(cert, key))
 	} else {
-		fmt.Printf("none Localhost Hosts Not Supported Yet... Server Failed to Start")
+		panic("Certificate handling without Cert/Key Files Not Implemented Yet")
 	}
 }

@@ -7,10 +7,11 @@ import (
 
 func main() {
 	server.Setup(server.ConfigData{
-		Host:       "localhost",
-		Port:       "9010",
-		PrivateDir: "private",
-		AppendWWW:  true,
+		Host:        "localhost",
+		Port:        "9010",
+		PrivateDir:  "private",
+		AppendWWW:   true,
+		OpenSSLPath: "C:\\Users\\danie\\Documents\\OpenSSL-Win64\\bin\\openssl.exe",
 	})
 
 	routeMap := make(map[string]string)
