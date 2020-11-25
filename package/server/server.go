@@ -64,11 +64,18 @@ func genDomainString() string {
 
 //ConfigData is ...
 type ConfigData struct {
-	Host           string `default:"localhost"`
-	Port           string `default:"8000"`
-	PrivateDir     string `default:".private"`
-	OpenSSLCommand string `default:""`
-	AppendWWW      bool   `default:"false"`
+	Host       string `default:"localhost"`
+	Port       string `default:"8000"`
+	PrivateDir string `default:".private"`
+	AppendWWW  bool   `default:"false"`
+
+	//* OpenSSL Information
+	OpenSSLCommand    string `default:""`
+	CountryCode       string `default:"."`
+	City              string `default:"."`
+	StateOrProvidence string `default:"."`
+	Organization      string `default:"."`
+	OrganizationUnit  string `default:"."`
 }
 
 //AddDomain is ...
@@ -108,15 +115,17 @@ func Run() {
 	fmt.Printf("Server Ready\n")
 	fmt.Printf("Website available on https://%s:%s\n", configData.Host, configData.Port)
 
-	cert, key, certFunc := GetCert(
-		configData.OpenSSLCommand,
-		configData.PrivateDir,
+	cert := GetCert(
 		configData.Host,
 		genDomainString(),
 	)
 
-	if certFunc == nil {
+	if cert == nil {
+		//TODO: Default to http if Cert is not created
+	} else {
+
 		cfg := &tls.Config{
+			GetCertificate:           cert,
 			MinVersion:               tls.VersionTLS12,
 			CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
 			PreferServerCipherSuites: true,
@@ -135,8 +144,8 @@ func Run() {
 			TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
 		}
 
-		log.Fatal(srv.ListenAndServeTLS(cert, key))
-	} else {
-		panic("Certificate handling without Cert/Key Files Not Implemented Yet")
+		if err := srv.ListenAndServe(); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
