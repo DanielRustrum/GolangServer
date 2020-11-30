@@ -4,12 +4,14 @@ package handler
 
 import (
 	"net/http"
+
+	serverHttp "github.com/DanielRustrum/Https-Go-Server/package/server/http"
 )
 
 //* Public
 
 //FileServer is ...
-func FileServer(publicDir string, routeMap map[string]string) *Handler {
+func FileServer(publicDir string, routeMap map[string]string) *serverHttp.HTTPHandler {
 	getContent := func(path string) (string, []byte, int) {
 		content := []byte{}
 		success := false
@@ -62,8 +64,8 @@ func FileServer(publicDir string, routeMap map[string]string) *Handler {
 		return filename, content
 	}
 
-	id := genHandlerID()
-	return &Handler{
+	id := serverHttp.GetHandlerID()
+	return &serverHttp.HTTPHandler{
 		ID: id,
 		Handler: func(response http.ResponseWriter, request *http.Request) {
 			filename, content, statusCode := getContent(request.URL.Path)

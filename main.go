@@ -2,11 +2,11 @@ package main
 
 import (
 	"github.com/DanielRustrum/Https-Go-Server/package/handler"
-	"github.com/DanielRustrum/Https-Go-Server/package/server"
+	server "github.com/DanielRustrum/Https-Go-Server/package/servers/http"
 )
 
 func main() {
-	server.Setup(server.ConfigData{
+	server.Setup(server.HTTPConfigData{
 		Host:       "localhost",
 		Port:       "9010",
 		PrivateDir: "private",

@@ -1,4 +1,4 @@
-package server
+package http
 
 // TODO: Ready Message
 // TODO: Non-Localhost server boot
@@ -11,14 +11,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/DanielRustrum/Https-Go-Server/package/handler"
+	handler "github.com/DanielRustrum/Https-Go-Server/package/handlers"
 )
 
 //* Server Logic
 type subdomainHandler map[string]http.Handler
 type domainMap map[string]func(http.ResponseWriter, *http.Request)
 
-var configData ConfigData = ConfigData{}
+var configData HTTPConfigData = HTTPConfigData{}
 var domains map[string]func(http.ResponseWriter, *http.Request)
 var ranSetup bool = false
 
@@ -62,8 +62,8 @@ func genDomainString() string {
 
 //* Public
 
-//ConfigData is ...
-type ConfigData struct {
+//HTTPConfigData is ...
+type HTTPConfigData struct {
 	Host       string `default:"localhost"`
 	Port       string `default:"8000"`
 	PrivateDir string `default:".private"`
@@ -92,11 +92,12 @@ func AddDomain(key string, handler func(http.ResponseWriter, *http.Request)) {
 }
 
 //Setup is ...
-func Setup(data ConfigData) {
+func Setup(data HTTPConfigData) {
 	if !ranSetup {
 		configData = data
 		handler.Setup()
 		domains = make(domainMap)
+		idMap = make(map[int]bool)
 	}
 	ranSetup = true
 }
