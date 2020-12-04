@@ -1,11 +1,11 @@
-package handler
+package presets
 
 // TODO: Gzip Control
 
 import (
 	"net/http"
 
-	serverHttp "github.com/DanielRustrum/Https-Go-Server/package/server/http"
+	serverHttp "github.com/DanielRustrum/Https-Go-Server/package/servers/http"
 )
 
 //* Public

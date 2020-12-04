@@ -1,9 +1,9 @@
-package handler
+package presets
 
 import (
 	"net/http"
 
-	serverHttp "github.com/DanielRustrum/Https-Go-Server/package/server/http"
+	serverHttp "github.com/DanielRustrum/Https-Go-Server/package/servers/http"
 )
 
 //RESTServer is ...

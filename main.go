@@ -1,29 +1,37 @@
 package main
 
 import (
-	"github.com/DanielRustrum/Https-Go-Server/package/handler"
-	server "github.com/DanielRustrum/Https-Go-Server/package/servers/http"
+	server "github.com/DanielRustrum/Https-Go-Server/package/core"
 )
 
 func main() {
-	server.Setup(server.HTTPConfigData{
-		Host:       "localhost",
-		Port:       "9010",
-		PrivateDir: "private",
-		AppendWWW:  true,
 
-		OpenSSLCommand:    "C:\\Users\\danie\\Documents\\OpenSSL-Win64\\bin\\openssl.exe",
-		City:              "Flagstaff",
-		CountryCode:       "US",
-		StateOrProvidence: "Arizona",
-	})
+	//? Old Way
+	// server.Setup(server.HTTPConfigData{
+	// 	Host:       "localhost",
+	// 	Port:       "9010",
+	// 	PrivateDir: "private",
+	// 	AppendWWW:  true,
 
-	routeMap := make(map[string]string)
-	routeMap["/"] = "./index.html"
-	routeMap["404"] = "./404.html"
+	// 	OpenSSLCommand:    "C:\\Users\\danie\\Documents\\OpenSSL-Win64\\bin\\openssl.exe",
+	// 	City:              "Flagstaff",
+	// 	CountryCode:       "US",
+	// 	StateOrProvidence: "Arizona",
+	// })
 
-	fileServer := handler.FileServer("./public", routeMap)
+	// routeMap := make(map[string]string)
+	// routeMap["/"] = "./index.html"
+	// routeMap["404"] = "./404.html"
 
-	server.AddDomain("", fileServer.Handler)
-	server.Run()
+	// fileServer := handler.FileServer("./public", routeMap)
+
+	// server.AddDomain("", fileServer.Handler)
+	// server.Run()
+
+	_ := server.Use("http")
+
+	_ := server.Setup(server.Configs{})
+	modules := server.GetModules()
+
+	_ := server.Run()
 }

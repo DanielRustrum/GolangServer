@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"strings"
 
-	handler "github.com/DanielRustrum/Https-Go-Server/package/handlers"
+	"github.com/DanielRustrum/Https-Go-Server/package/core"
 )
 
 //* Server Logic
@@ -60,10 +60,30 @@ func genDomainString() string {
 	return domainString
 }
 
+func setup(data HTTPConfigData) {
+	if !ranSetup {
+		configData = data
+		domains = make(domainMap)
+	}
+	ranSetup = true
+}
+
+func addDomain(key string, handler func(http.ResponseWriter, *http.Request)) {
+	domains[key] = handler
+
+	if configData.AppendWWW {
+		if key == "" {
+			domains["www"] = handler
+		} else {
+			domains["www."+key] = handler
+		}
+	}
+}
+
 //* Public
 
-//HTTPConfigData is ...
-type HTTPConfigData struct {
+//Config is ...
+type Config struct {
 	Host       string `default:"localhost"`
 	Port       string `default:"8000"`
 	PrivateDir string `default:".private"`
@@ -78,28 +98,21 @@ type HTTPConfigData struct {
 	OrganizationUnit  string `default:"."`
 }
 
-//AddDomain is ...
-func AddDomain(key string, handler func(http.ResponseWriter, *http.Request)) {
-	domains[key] = handler
-
-	if configData.AppendWWW {
-		if key == "" {
-			domains["www"] = handler
-		} else {
-			domains["www."+key] = handler
-		}
-	}
+//Package is ...
+type Package struct {
+	AddDomain func(key string, handler func(http.ResponseWriter, *http.Request))
 }
 
-//Setup is ...
-func Setup(data HTTPConfigData) {
-	if !ranSetup {
-		configData = data
-		handler.Setup()
-		domains = make(domainMap)
-		idMap = make(map[int]bool)
+//Use is ...
+func Use(data core.Config) {
+
+}
+
+//GetPackage is ...
+func GetPackage() Package {
+	return Package{
+		AddDomain: addDomain,
 	}
-	ranSetup = true
 }
 
 //Run is ...

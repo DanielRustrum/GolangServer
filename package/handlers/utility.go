@@ -1,4 +1,4 @@
-package handler
+package presets
 
 import (
 	"io/ioutil"
